@@ -1,13 +1,12 @@
 {
   "private": true,
   "author": {
-    "name": "Doinel Atanasiu",
-    "email": "doinel1atanasiu@gmail.com",
-    "url": "https://business-link.d1a.app"
+    "name": "Ariana Cecelic",
+    "email": "acecelic@asu.edu"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/doinel1a/vite-three-js"
+    "url": "https://github.com/acecelic/Bubble-Popping-Game"
   },
   "type": "module",
   "license": "MIT",
