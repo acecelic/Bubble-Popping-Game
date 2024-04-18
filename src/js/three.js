@@ -43,12 +43,15 @@ export default class Three {
 
     this.controls = new OrbitControls(this.camera, this.canvas);
 
-    this.clock = new T.Clock();
+    // this.clock = new T.Clock();
 
-    // this.setLights();
+    this.raycaster = new T.Raycaster();
+    this.mouse = new T.Vector2();
+
+    this.setLights();
     this.setGeometry();
     this.render();
-    // this.setResize();
+    this.setResize();
   }
 
   setLights() {
@@ -57,14 +60,6 @@ export default class Three {
   }
 
   setGeometry() {
-    // Sets a 12 by 12 gird helper
-    this.gridHelper = new T.GridHelper(12, 12);
-    this.scene.add(this.gridHelper);
-
-    // Sets the x, y, and z axes with each having a length of 4
-    this.axesHelper = new T.AxesHelper(4);
-    this.scene.add(this.axesHelper);
-
     this.hdrTextureUrl = new URL('../assets/chinese_garden_4k.hdr', import.meta.url);
     this.loader = new RGBELoader();
     this.loader.load(this.hdrTextureUrl, (texture) => {
@@ -94,11 +89,13 @@ export default class Three {
     );
 
     this.populateBubbles();
+    window.addEventListener('click', this.onMouseClick.bind(this));
   }
 
   populateBubbles() {
     const REGION_SIZE = 25;
     const NUM_BUBBLES = 2000;
+    this.bubblesCount = NUM_BUBBLES;
 
     for (let i = 0; i < NUM_BUBBLES; i++) {
       let tempBubble = this.bubble.clone();
@@ -109,8 +106,29 @@ export default class Three {
     }
   }
 
+  onMouseClick(event) {
+    this.mouse.x = (event.clientX / device.width) * 2 - 1;
+    this.mouse.y = -(event.clientY / device.height) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    if (intersects.length > 0) {
+      const obj = intersects[0].object;
+      this.scene.remove(obj);
+      this.bubblesCount -= 1;
+      console.log("Bubbles left: ", this.bubblesCount);
+
+      if (this.bubblesCount == 0) {
+        console.log("No more bubbles")
+        this.populateBubbles();
+      }
+    }
+  }
+
   render() {
-    const elapsedTime = this.clock.getElapsedTime();
+    // const elapsedTime = this.clock.getElapsedTime();
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render.bind(this));
   }
