@@ -73,7 +73,7 @@ export default class Three {
     });
 
     this.bubble = new T.Mesh(
-      new T.SphereGeometry(0.5,50,50),
+      new T.SphereGeometry(0.8,50,50),
       new T.MeshPhysicalMaterial({
           roughness: 0,
           metalness: 0,
@@ -91,11 +91,12 @@ export default class Three {
 
     this.populateBubbles();
     window.addEventListener('click', this.onMouseClick.bind(this));
+    window.addEventListener('touchstart', this.onTouchStart.bind(this));
   }
 
   populateBubbles() {
     const REGION_SIZE = 25;
-    const NUM_BUBBLES = 2000;
+    const NUM_BUBBLES = 800;
     this.bubblesCount = NUM_BUBBLES;
 
     for (let i = 0; i < NUM_BUBBLES; i++) {
@@ -123,6 +124,31 @@ export default class Three {
 
       if (this.bubblesCount == 0) {
         console.log("No more bubbles")
+        this.populateBubbles();
+      }
+    }
+  }
+
+  onTouchStart(event) {
+    event.preventDefault();
+
+    const touch = event.touches[0];
+
+    this.mouse.x = (touch.clientX / device.width) * 2 - 1;
+    this.mouse.y = -(touch.clientY / device.height) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    if (intersects.length > 0) {
+      const obj = intersects[0].object;
+      this.scene.remove(obj);
+      this.bubblesCount -= 1;
+      console.log("Bubbles left: ", this.bubblesCount);
+
+      if (this.bubblesCount === 0) {
+        console.log("No more bubbles");
         this.populateBubbles();
       }
     }
