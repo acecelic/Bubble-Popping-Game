@@ -42,6 +42,7 @@ export default class Three {
     this.renderer.toneMappingExposure = 0.7;
 
     this.controls = new OrbitControls(this.camera, this.canvas);
+    this.controls.enableZoom = false;
 
     // this.clock = new T.Clock();
 
